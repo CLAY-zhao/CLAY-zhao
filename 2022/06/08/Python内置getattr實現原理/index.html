@@ -1,0 +1,590 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#FFF">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="icon" type="image/ico" sizes="32x32" href="/images/favicon.ico">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+<link rel="alternate" type="application/rss+xml" title="士多啤梨苹果橙" href="http://example.com/rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="士多啤梨苹果橙" href="http://example.com/atom.xml" />
+<link rel="alternate" type="application/json" title="士多啤梨苹果橙" href="http://example.com/feed.json" />
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Mulish:300,300italic,400,400italic,700,700italic%7CFredericka%20the%20Great:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20JP:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20SC:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="/css/app.css?v=0.2.5">
+
+  
+  <meta name="keywords" content="CPython,C" />
+
+
+<link rel="canonical" href="http://example.com/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/">
+
+
+
+  <title>
+getattr實現原理 - C - CPython |
+Leayoos Chui = 士多啤梨苹果橙</title>
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div id="loading">
+    <div class="cat">
+      <div class="body"></div>
+      <div class="head">
+        <div class="face"></div>
+      </div>
+      <div class="foot">
+        <div class="tummy-end"></div>
+        <div class="bottom"></div>
+        <div class="legs left"></div>
+        <div class="legs right"></div>
+      </div>
+      <div class="paw">
+        <div class="hands left"></div>
+        <div class="hands right"></div>
+      </div>
+    </div>
+  </div>
+  <div id="container">
+    <header id="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="inner">
+        <div id="brand">
+          <div class="pjax">
+          
+  <h1 itemprop="name headline">getattr實現原理
+  </h1>
+  
+<div class="meta">
+  <span class="item" title="Created: 2022-06-08 11:30:28">
+    <span class="icon">
+      <i class="ic i-calendar"></i>
+    </span>
+    <span class="text">Posted on</span>
+    <time itemprop="dateCreated datePublished" datetime="2022-06-08T11:30:28+08:00">2022-06-08</time>
+  </span>
+</div>
+
+
+          </div>
+        </div>
+        <nav id="nav">
+  <div class="inner">
+    <div class="toggle">
+      <div class="lines" aria-label="Toggle navigation bar">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </div>
+    </div>
+    <ul class="menu">
+      <li class="item title"><a href="/" rel="start">Leayoos Chui</a></li>
+    </ul>
+    <ul class="right">
+      <li class="item theme">
+        <i class="ic i-sun"></i>
+      </li>
+      <li class="item search">
+        <i class="ic i-search"></i>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+      </div>
+      <div id="imgs" class="pjax">
+        <ul>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1giciundwu5j20zk0m8n9e.jpg"></li>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1gipexj2jgzj20zk0m8b09.jpg"></li>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1giclga70tsj20zk0m84mr.jpg"></li>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1gipeu1usa7j20zk0m8b29.jpg"></li>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1giclwuom7cj20zk0m8dvn.jpg"></li>
+          <li class="item" data-background-image="https://tva2.sinaimg.cn/large/6833939bly1gipevarprfj20zk0m8npd.jpg"></li>
+        </ul>
+      </div>
+    </header>
+    <div id="waves">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
+    </div>
+    <main>
+      <div class="inner">
+        <div id="main" class="pjax">
+          
+  <div class="article wrap">
+    
+<div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<i class="ic i-home"></i>
+<span><a href="/">Home</a></span><i class="ic i-angle-right"></i>
+<span  itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/categories/CPython/" itemprop="item" rel="index" title="In CPython"><span itemprop="name">CPython</span></a>
+<meta itemprop="position" content="1" /></span>
+<i class="ic i-angle-right"></i>
+<span  class="current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/categories/CPython/C/" itemprop="item" rel="index" title="In C"><span itemprop="name">C</span></a>
+<meta itemprop="position" content="2" /></span>
+</div>
+
+    <article itemscope itemtype="http://schema.org/Article" class="post block" lang="en">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/">
+
+  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="image" content="/images/avatar.png">
+    <meta itemprop="name" content="小芳芳">
+    <meta itemprop="description" content=", ">
+  </span>
+
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="士多啤梨苹果橙">
+  </span>
+
+  <div class="body md" itemprop="articleBody">
+    
+
+    <p>getattr 是 Python 中的一個内建函數，在官方的 getattr 解釋中是這樣説明的</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token builtin">getattr</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">,</span> name<span class="token punctuation">[</span><span class="token punctuation">,</span> default<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> value</pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre>Get a named attribute <span class="token keyword">from</span> an <span class="token builtin">object</span><span class="token punctuation">;</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> <span class="token string">'y'</span><span class="token punctuation">)</span> <span class="token keyword">is</span> equivalent to x<span class="token punctuation">.</span>y<span class="token punctuation">.</span></pre></td></tr><tr><td data-num="4"></td><td><pre>When a default argument <span class="token keyword">is</span> given<span class="token punctuation">,</span> it <span class="token keyword">is</span> returned when the attribute doesn't</pre></td></tr><tr><td data-num="5"></td><td><pre>exist<span class="token punctuation">;</span> without it<span class="token punctuation">,</span> an exception <span class="token keyword">is</span> raised <span class="token keyword">in</span> that <span class="token keyword">case</span><span class="token punctuation">.</span></pre></td></tr></table></figure><span id="more"></span>
+<p>你可以給定一個 object，并通過 name string 獲取命名屬性，如果沒有設置默認參數，查找屬性不存在，就會引發異常</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">A</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">pass</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>a <span class="token operator">=</span> A<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre>Traceback <span class="token punctuation">(</span>most recent call last<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="9"></td><td><pre>  File <span class="token string">"E:\test.py"</span><span class="token punctuation">,</span> line <span class="token number">7</span><span class="token punctuation">,</span> <span class="token keyword">in</span> <span class="token operator">&lt;</span>module<span class="token operator">></span></pre></td></tr><tr><td data-num="10"></td><td><pre>    item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="11"></td><td><pre>AttributeError<span class="token punctuation">:</span> <span class="token string">'A'</span> <span class="token builtin">object</span> has no attribute <span class="token string">'name'</span></pre></td></tr></table></figure><p>你可以給定一個默認參數，儅屬性查找不存在時，會返回給定的默認值</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">A</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">pass</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>a <span class="token operator">=</span> A<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"Peter"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token keyword">print</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="9"></td><td><pre></pre></td></tr><tr><td data-num="10"></td><td><pre>Peter</pre></td></tr><tr><td data-num="11"></td><td><pre></pre></td></tr><tr><td data-num="12"></td><td><pre>Process finished <span class="token keyword">with</span> exit code <span class="token number">0</span></pre></td></tr></table></figure><p>getattr 方法最主要的作用的實現反射機制，可以動態獲取對象的屬性，還有 setattr、hasattr、delattr 類似的方法，那麽 getattr 是如何實現屬性查找的呢？</p>
+<h3 id="getattr的背後實現機制"><a class="markdownIt-Anchor" href="#getattr的背後實現機制">#</a> getattr 的背後實現機制</h3>
+<p>getattr 是 Python 中的内置函數，可以查看源代碼的 Python/bltinmodule.c 文件，在大概第 2703 行有很多方法</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">static</span> PyMethodDef builtin_methods<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"__build_class__"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin___build_class__<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="3"></td><td><pre>     METH_FASTCALL <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> build_class_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"__import__"</span><span class="token punctuation">,</span>      <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin___import__<span class="token punctuation">,</span> METH_VARARGS <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> import_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    BUILTIN_ABS_METHODDEF</pre></td></tr><tr><td data-num="6"></td><td><pre>    BUILTIN_ALL_METHODDEF</pre></td></tr><tr><td data-num="7"></td><td><pre>    BUILTIN_ANY_METHODDEF</pre></td></tr><tr><td data-num="8"></td><td><pre>    BUILTIN_ASCII_METHODDEF</pre></td></tr><tr><td data-num="9"></td><td><pre>    BUILTIN_BIN_METHODDEF</pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"breakpoint"</span><span class="token punctuation">,</span>      <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_breakpoint<span class="token punctuation">,</span> METH_FASTCALL <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> breakpoint_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="11"></td><td><pre>    BUILTIN_CALLABLE_METHODDEF</pre></td></tr><tr><td data-num="12"></td><td><pre>    BUILTIN_CHR_METHODDEF</pre></td></tr><tr><td data-num="13"></td><td><pre>    BUILTIN_COMPILE_METHODDEF</pre></td></tr><tr><td data-num="14"></td><td><pre>    BUILTIN_DELATTR_METHODDEF</pre></td></tr><tr><td data-num="15"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"dir"</span><span class="token punctuation">,</span>             builtin_dir<span class="token punctuation">,</span>        METH_VARARGS<span class="token punctuation">,</span> dir_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="16"></td><td><pre>    BUILTIN_DIVMOD_METHODDEF</pre></td></tr><tr><td data-num="17"></td><td><pre>    BUILTIN_EVAL_METHODDEF</pre></td></tr><tr><td data-num="18"></td><td><pre>    BUILTIN_EXEC_METHODDEF</pre></td></tr><tr><td data-num="19"></td><td><pre>    BUILTIN_FORMAT_METHODDEF</pre></td></tr><tr><td data-num="20"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"getattr"</span><span class="token punctuation">,</span>         <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_getattr<span class="token punctuation">,</span> METH_FASTCALL<span class="token punctuation">,</span> getattr_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="21"></td><td><pre>    BUILTIN_GLOBALS_METHODDEF</pre></td></tr><tr><td data-num="22"></td><td><pre>    BUILTIN_HASATTR_METHODDEF</pre></td></tr><tr><td data-num="23"></td><td><pre>    BUILTIN_HASH_METHODDEF</pre></td></tr><tr><td data-num="24"></td><td><pre>    BUILTIN_HEX_METHODDEF</pre></td></tr><tr><td data-num="25"></td><td><pre>    BUILTIN_ID_METHODDEF</pre></td></tr><tr><td data-num="26"></td><td><pre>    BUILTIN_INPUT_METHODDEF</pre></td></tr><tr><td data-num="27"></td><td><pre>    BUILTIN_ISINSTANCE_METHODDEF</pre></td></tr><tr><td data-num="28"></td><td><pre>    BUILTIN_ISSUBCLASS_METHODDEF</pre></td></tr><tr><td data-num="29"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"iter"</span><span class="token punctuation">,</span>            <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_iter<span class="token punctuation">,</span>       METH_FASTCALL<span class="token punctuation">,</span> iter_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    BUILTIN_LEN_METHODDEF</pre></td></tr><tr><td data-num="31"></td><td><pre>    BUILTIN_LOCALS_METHODDEF</pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"max"</span><span class="token punctuation">,</span>             <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_max<span class="token punctuation">,</span>        METH_VARARGS <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> max_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="33"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"min"</span><span class="token punctuation">,</span>             <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_min<span class="token punctuation">,</span>        METH_VARARGS <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> min_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="34"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"next"</span><span class="token punctuation">,</span>            <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_next<span class="token punctuation">,</span>       METH_FASTCALL<span class="token punctuation">,</span> next_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="35"></td><td><pre>    BUILTIN_OCT_METHODDEF</pre></td></tr><tr><td data-num="36"></td><td><pre>    BUILTIN_ORD_METHODDEF</pre></td></tr><tr><td data-num="37"></td><td><pre>    BUILTIN_POW_METHODDEF</pre></td></tr><tr><td data-num="38"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"print"</span><span class="token punctuation">,</span>           <span class="token punctuation">(</span>PyCFunction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">)</span>builtin_print<span class="token punctuation">,</span>      METH_FASTCALL <span class="token operator">|</span> METH_KEYWORDS<span class="token punctuation">,</span> print_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="39"></td><td><pre>    BUILTIN_REPR_METHODDEF</pre></td></tr><tr><td data-num="40"></td><td><pre>    BUILTIN_ROUND_METHODDEF</pre></td></tr><tr><td data-num="41"></td><td><pre>    BUILTIN_SETATTR_METHODDEF</pre></td></tr><tr><td data-num="42"></td><td><pre>    BUILTIN_SORTED_METHODDEF</pre></td></tr><tr><td data-num="43"></td><td><pre>    BUILTIN_SUM_METHODDEF</pre></td></tr><tr><td data-num="44"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token string">"vars"</span><span class="token punctuation">,</span>            builtin_vars<span class="token punctuation">,</span>       METH_VARARGS<span class="token punctuation">,</span> vars_doc<span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="45"></td><td><pre>    <span class="token punctuation">&#123;</span><span class="token constant">NULL</span><span class="token punctuation">,</span>              <span class="token constant">NULL</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="46"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>而儅調用 getattr 方法時，就會執行 builtin_getattr 函數</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment">/* AC: cannot convert yet, as needs PEP 457 group support in inspect */</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">static</span> PyObject <span class="token operator">*</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token function">builtin_getattr</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>self<span class="token punctuation">,</span> PyObject <span class="token operator">*</span><span class="token keyword">const</span> <span class="token operator">*</span>args<span class="token punctuation">,</span> Py_ssize_t nargs<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    PyObject <span class="token operator">*</span>v<span class="token punctuation">,</span> <span class="token operator">*</span>name<span class="token punctuation">,</span> <span class="token operator">*</span>result<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="6"></td><td><pre></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">_PyArg_CheckPositional</span><span class="token punctuation">(</span><span class="token string">"getattr"</span><span class="token punctuation">,</span> nargs<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="8"></td><td><pre>        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre></pre></td></tr><tr><td data-num="10"></td><td><pre>    v <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>  <span class="token comment">// 取出對象，getattr (obj, "xxx"), v 就是 obj 對象</span></pre></td></tr><tr><td data-num="11"></td><td><pre>    name <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 取出字符串，也就是 xxx</span></pre></td></tr><tr><td data-num="12"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_Check</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>	<span class="token comment">// 類型檢查，如果 name string 不是字符串類型，就會抛出 getattr (): attribute name must be string 異常</span></pre></td></tr><tr><td data-num="14"></td><td><pre>        <span class="token function">PyErr_SetString</span><span class="token punctuation">(</span>PyExc_TypeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="15"></td><td><pre>                        <span class="token string">"getattr(): attribute name must be string"</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="18"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>nargs <span class="token operator">></span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="19"></td><td><pre>        <span class="token comment">// 如果設置了默認參數，就會執行這裏的代碼</span></pre></td></tr><tr><td data-num="20"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_PyObject_LookupAttr</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token operator">&amp;</span>result<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>            PyObject <span class="token operator">*</span>dflt <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="22"></td><td><pre>            <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>dflt<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="23"></td><td><pre>            <span class="token keyword">return</span> dflt<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="25"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="26"></td><td><pre>    <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="27"></td><td><pre>        <span class="token comment">// 沒有設置默認參數</span></pre></td></tr><tr><td data-num="28"></td><td><pre>        result <span class="token operator">=</span> <span class="token function">PyObject_GetAttr</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="29"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    <span class="token keyword">return</span> result<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="31"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>可以看到 builtin_getattr 方法還是比較簡單的，一進來先檢查 name string 是否為字符串類型，否則就抛異常</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">A</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">pass</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>a <span class="token operator">=</span> A<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"Peter"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre>Traceback <span class="token punctuation">(</span>most recent call last<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="9"></td><td><pre>  File <span class="token string">"E:\herokuapp\dawei-base\tests\test.py"</span><span class="token punctuation">,</span> line <span class="token number">7</span><span class="token punctuation">,</span> <span class="token keyword">in</span> <span class="token operator">&lt;</span>module<span class="token operator">></span></pre></td></tr><tr><td data-num="10"></td><td><pre>    item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"Peter"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="11"></td><td><pre>TypeError<span class="token punctuation">:</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> attribute name must be string</pre></td></tr></table></figure><p>如果設置了默認參數，也就是 getattr (a, “name”, “Peter”) 這種寫法，就會調用 _PyObject_LookupAttr 方法，分別傳入了 a 對象、“name” 字符串，以及 &amp;result, 儅屬性找到時就會賦值 result，并返回 result，那如果沒有找到屬性，就會通過 args [2] 獲取到給定的默認參數，并將該參數返回</p>
+<p>查看_PyObject_LookupAttr 的代碼調用</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">int</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token function">_PyObject_LookupAttr</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>v<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>name<span class="token punctuation">,</span> PyObject <span class="token operator">*</span><span class="token operator">*</span>result<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    PyTypeObject <span class="token operator">*</span>tp <span class="token operator">=</span> <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_Check</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="7"></td><td><pre>        <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_TypeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="8"></td><td><pre>                     <span class="token string">"attribute name must be string, not '%.200s'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="9"></td><td><pre>                     <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token operator">-></span>tp_name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>        <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="11"></td><td><pre>        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="12"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="13"></td><td><pre></pre></td></tr><tr><td data-num="14"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattro <span class="token operator">==</span> PyObject_GenericGetAttr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>	<span class="token comment">// 在對象沒有重載 tp_getattro 方法時，會調用_PyObject_GenericGetAttrWithDict 方法查找</span></pre></td></tr><tr><td data-num="16"></td><td><pre>        <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token function">_PyObject_GenericGetAttrWithDict</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>result <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="18"></td><td><pre>	    <span class="token comment">// 1 為找到了</span></pre></td></tr><tr><td data-num="19"></td><td><pre>            <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PyErr_Occurred</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="22"></td><td><pre>            <span class="token comment">//-1 為報異常</span></pre></td></tr><tr><td data-num="23"></td><td><pre>            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="25"></td><td><pre>	<span class="token comment">// 沒有找到</span></pre></td></tr><tr><td data-num="26"></td><td><pre>        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="27"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="28"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattro <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="29"></td><td><pre>	<span class="token comment">//tp_getattro 被我們重載了，就會調用我們自己的 tp_getattro 方法</span></pre></td></tr><tr><td data-num="30"></td><td><pre>        <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">*</span>tp<span class="token operator">-></span>tp_getattro<span class="token punctuation">)</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattr <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="33"></td><td><pre>	<span class="token comment">// 如果 tp_getattro 也沒有重載，就會判斷 tp_getattr 是否被重載</span></pre></td></tr><tr><td data-num="34"></td><td><pre>        <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name_str <span class="token operator">=</span> <span class="token function">PyUnicode_AsUTF8</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="35"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>name_str <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="36"></td><td><pre>            <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="37"></td><td><pre>            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="38"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="39"></td><td><pre>        <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">*</span>tp<span class="token operator">-></span>tp_getattr<span class="token punctuation">)</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>name_str<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="41"></td><td><pre>    <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="42"></td><td><pre>	<span class="token comment">// 既沒有重載 tp_getattro，也沒有重載 tp_getattr，抛異常</span></pre></td></tr><tr><td data-num="43"></td><td><pre>        <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="44"></td><td><pre>        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="45"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="46"></td><td><pre></pre></td></tr><tr><td data-num="47"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>result <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="48"></td><td><pre>	<span class="token comment">// 找到屬性了</span></pre></td></tr><tr><td data-num="49"></td><td><pre>        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="50"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="51"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyErr_ExceptionMatches</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="52"></td><td><pre>        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="53"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="54"></td><td><pre>    <span class="token function">PyErr_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="55"></td><td><pre>    <span class="token comment">// 沒有找到</span></pre></td></tr><tr><td data-num="56"></td><td><pre>    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="57"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>那在我們沒有重載 tp_getattro 方法時，會執行_PyObject_GenericGetAttrWithDict 方法，代碼還挺長😶</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment">/* Generic GetAttr functions - put these in your tp_[gs]etattro slot. */</span></pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre>PyObject <span class="token operator">*</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token function">_PyObject_GenericGetAttrWithDict</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>obj<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>name<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>                                 PyObject <span class="token operator">*</span>dict<span class="token punctuation">,</span> <span class="token keyword">int</span> suppress<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token comment">/* Make sure the logic of _PyObject_GetMethod is in sync with</pre></td></tr><tr><td data-num="8"></td><td><pre>       this method.</pre></td></tr><tr><td data-num="9"></td><td><pre></pre></td></tr><tr><td data-num="10"></td><td><pre>       When suppress=1, this function suppress AttributeError.</pre></td></tr><tr><td data-num="11"></td><td><pre>    */</span></pre></td></tr><tr><td data-num="12"></td><td><pre></pre></td></tr><tr><td data-num="13"></td><td><pre>    PyTypeObject <span class="token operator">*</span>tp <span class="token operator">=</span> <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 獲取 obj 的父類</span></pre></td></tr><tr><td data-num="14"></td><td><pre>    PyObject <span class="token operator">*</span>descr <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>    PyObject <span class="token operator">*</span>res <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>    descrgetfunc f<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>    Py_ssize_t dictoffset<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="18"></td><td><pre>    PyObject <span class="token operator">*</span><span class="token operator">*</span>dictptr<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="19"></td><td><pre></pre></td></tr><tr><td data-num="20"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_Check</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>        <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_TypeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="22"></td><td><pre>                     <span class="token string">"attribute name must be string, not '%.200s'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="23"></td><td><pre>                     <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token operator">-></span>tp_name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="25"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="26"></td><td><pre>    <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//name string 引用計數 + 1</span></pre></td></tr><tr><td data-num="27"></td><td><pre></pre></td></tr><tr><td data-num="28"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_dict <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="29"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PyType_Ready</span><span class="token punctuation">(</span>tp<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="30"></td><td><pre>            <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="32"></td><td><pre></pre></td></tr><tr><td data-num="33"></td><td><pre>    <span class="token comment">/*</pre></td></tr><tr><td data-num="34"></td><td><pre>    _PyType_Lookup 代碼調用比較多，就不粘出來了，它裏面做了一些對屬性值得緩存，最主要的是通過 MRO 查找屬性，</pre></td></tr><tr><td data-num="35"></td><td><pre>    它會通過 a 對象的父類，也就是 A 類，獲取 A 類的 MRO，并通過遍歷 MRO，獲取每個類的__dict__，再通過 hash 查找</pre></td></tr><tr><td data-num="36"></td><td><pre>    */</span></pre></td></tr><tr><td data-num="37"></td><td><pre>    descr <span class="token operator">=</span> <span class="token function">_PyType_Lookup</span><span class="token punctuation">(</span>tp<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="38"></td><td><pre></pre></td></tr><tr><td data-num="39"></td><td><pre>    f <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>descr <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="41"></td><td><pre>	<span class="token comment">// 如果找到屬性了，</span></pre></td></tr><tr><td data-num="42"></td><td><pre>        <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>descr<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="43"></td><td><pre>	<span class="token comment">// 獲取__get__方法</span></pre></td></tr><tr><td data-num="44"></td><td><pre>        f <span class="token operator">=</span> <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>descr<span class="token punctuation">)</span><span class="token operator">-></span>tp_descr_get<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="45"></td><td><pre>	<span class="token comment">// 判斷是否__get__不爲空并且__set__不爲空</span></pre></td></tr><tr><td data-num="46"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>f <span class="token operator">!=</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> <span class="token function">PyDescr_IsData</span><span class="token punctuation">(</span>descr<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="47"></td><td><pre>	    <span class="token comment">// 調用__get__方法</span></pre></td></tr><tr><td data-num="48"></td><td><pre>            res <span class="token operator">=</span> <span class="token function">f</span><span class="token punctuation">(</span>descr<span class="token punctuation">,</span> obj<span class="token punctuation">,</span> <span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">Py_TYPE</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="49"></td><td><pre>            <span class="token keyword">if</span> <span class="token punctuation">(</span>res <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> suppress <span class="token operator">&amp;&amp;</span></pre></td></tr><tr><td data-num="50"></td><td><pre>                    <span class="token function">PyErr_ExceptionMatches</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="51"></td><td><pre>                <span class="token function">PyErr_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="52"></td><td><pre>            <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="53"></td><td><pre>            <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="54"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="55"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="56"></td><td><pre></pre></td></tr><tr><td data-num="57"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>dict <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="58"></td><td><pre>        <span class="token comment">/* Inline _PyObject_GetDictPtr */</span></pre></td></tr><tr><td data-num="59"></td><td><pre>        dictoffset <span class="token operator">=</span> tp<span class="token operator">-></span>tp_dictoffset<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="60"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>dictoffset <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="61"></td><td><pre>            <span class="token keyword">if</span> <span class="token punctuation">(</span>dictoffset <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="62"></td><td><pre>                Py_ssize_t tsize <span class="token operator">=</span> <span class="token function">Py_SIZE</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="63"></td><td><pre>                <span class="token keyword">if</span> <span class="token punctuation">(</span>tsize <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="64"></td><td><pre>                    tsize <span class="token operator">=</span> <span class="token operator">-</span>tsize<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="65"></td><td><pre>                <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="66"></td><td><pre>                <span class="token class-name">size_t</span> size <span class="token operator">=</span> <span class="token function">_PyObject_VAR_SIZE</span><span class="token punctuation">(</span>tp<span class="token punctuation">,</span> tsize<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="67"></td><td><pre>                <span class="token function">_PyObject_ASSERT</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> size <span class="token operator">&lt;=</span> PY_SSIZE_T_MAX<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="68"></td><td><pre></pre></td></tr><tr><td data-num="69"></td><td><pre>                dictoffset <span class="token operator">+=</span> <span class="token punctuation">(</span>Py_ssize_t<span class="token punctuation">)</span>size<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="70"></td><td><pre>                <span class="token function">_PyObject_ASSERT</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> dictoffset <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="71"></td><td><pre>                <span class="token function">_PyObject_ASSERT</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> dictoffset <span class="token operator">%</span> SIZEOF_VOID_P <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="72"></td><td><pre>            <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="73"></td><td><pre>            dictptr <span class="token operator">=</span> <span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>obj <span class="token operator">+</span> dictoffset<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="74"></td><td><pre>            dict <span class="token operator">=</span> <span class="token operator">*</span>dictptr<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="75"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="76"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="77"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>dict <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="78"></td><td><pre>	<span class="token comment">// 進入該 if statement, 説明__get__或者__set__沒有定義，就在__dict__裏邊找</span></pre></td></tr><tr><td data-num="79"></td><td><pre>        <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>dict<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="80"></td><td><pre>        res <span class="token operator">=</span> <span class="token function">PyDict_GetItemWithError</span><span class="token punctuation">(</span>dict<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="81"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>res <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="82"></td><td><pre>            <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="83"></td><td><pre>            <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>dict<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="84"></td><td><pre>            <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="85"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="86"></td><td><pre>        <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="87"></td><td><pre>            <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>dict<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="88"></td><td><pre>            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PyErr_Occurred</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="89"></td><td><pre>                <span class="token keyword">if</span> <span class="token punctuation">(</span>suppress <span class="token operator">&amp;&amp;</span> <span class="token function">PyErr_ExceptionMatches</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="90"></td><td><pre>                    <span class="token function">PyErr_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="91"></td><td><pre>                <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="92"></td><td><pre>                <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="93"></td><td><pre>                    <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="94"></td><td><pre>                <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="95"></td><td><pre>            <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="96"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="97"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="98"></td><td><pre></pre></td></tr><tr><td data-num="99"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>f <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="100"></td><td><pre>	<span class="token comment">// 進入該 if statement, 説明__dict__裏也沒有，那就就調用__get__方法</span></pre></td></tr><tr><td data-num="101"></td><td><pre>        res <span class="token operator">=</span> <span class="token function">f</span><span class="token punctuation">(</span>descr<span class="token punctuation">,</span> obj<span class="token punctuation">,</span> <span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">Py_TYPE</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="102"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>res <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> suppress <span class="token operator">&amp;&amp;</span></pre></td></tr><tr><td data-num="103"></td><td><pre>                <span class="token function">PyErr_ExceptionMatches</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="104"></td><td><pre>            <span class="token function">PyErr_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="105"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="106"></td><td><pre>        <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="107"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="108"></td><td><pre></pre></td></tr><tr><td data-num="109"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>descr <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="110"></td><td><pre>	<span class="token comment">// 如果走到這，判斷自己不爲 NULL 就返回本身，意思是__get__和__set__都沒有定義，并且__dict__也沒有找到</span></pre></td></tr><tr><td data-num="111"></td><td><pre>        res <span class="token operator">=</span> descr<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="112"></td><td><pre>        descr <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="113"></td><td><pre>        <span class="token keyword">goto</span> done<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="114"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="115"></td><td><pre></pre></td></tr><tr><td data-num="116"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>suppress<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="117"></td><td><pre>        <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="118"></td><td><pre>                     <span class="token string">"'%.50s' object has no attribute '%U'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="119"></td><td><pre>                     tp<span class="token operator">-></span>tp_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="120"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="121"></td><td><pre>  done<span class="token operator">:</span></pre></td></tr><tr><td data-num="122"></td><td><pre>    <span class="token function">Py_XDECREF</span><span class="token punctuation">(</span>descr<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="123"></td><td><pre>    <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="124"></td><td><pre>    <span class="token keyword">return</span> res<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="125"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>_PyObject_GenericGetAttrWithDict 處理流程</p>
+<ol>
+<li>獲取查找類的父類，并取出 MRO，遍歷 MRO 查找屬性</li>
+<li>如果找到屬性，會判斷該對象是不是一個 Descriptor</li>
+<li>如果對象定義了__get__并且定義了__set__，調用__get__并返回</li>
+<li>如果沒有定義__set__，就在__dict__裏邊找</li>
+<li>如果__dict__也沒有找到，就調用__get__并返回</li>
+<li>如果__get__也沒有定義，就把自身返回</li>
+</ol>
+<p>可以看到，光查找屬性就做了不少的處理，那如果在我們重載了 tp_getattro 的情況下，它就會調用如下代碼</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattro <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token comment">// 定義了__getattribute__方法，調用并傳遞實例對象 v，也就是上面説的 a，還有 name string</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token operator">*</span>result <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">*</span>tp<span class="token operator">-></span>tp_getattro<span class="token punctuation">)</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>在我們為類中定義了__getattribute__方法時，就會在 getattr (a, “name”, “豬豬俠”) 時被調用，並傳遞 a，name 到__getattribute__裏作爲參數</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">Name</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">def</span> <span class="token function">__get__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> instance<span class="token punctuation">,</span> owner<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="3"></td><td><pre>        <span class="token keyword">return</span> <span class="token string">"Peter"</span></pre></td></tr><tr><td data-num="4"></td><td><pre></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">A</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    name <span class="token operator">=</span> Name<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token keyword">def</span> <span class="token function">__getattribute__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> item<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="8"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> item<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="9"></td><td><pre>        <span class="token keyword">return</span> item</pre></td></tr><tr><td data-num="10"></td><td><pre></pre></td></tr><tr><td data-num="11"></td><td><pre>a <span class="token operator">=</span> A<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="12"></td><td><pre>item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> <span class="token string">"豬豬俠"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="13"></td><td><pre></pre></td></tr><tr><td data-num="14"></td><td><pre>打印結果<span class="token punctuation">:</span> <span class="token operator">&lt;</span>__main__<span class="token punctuation">.</span>A <span class="token builtin">object</span> at <span class="token number">0x000001BC1C306FA0</span><span class="token operator">></span> name</pre></td></tr></table></figure><p>對於__getattr__方法，需要滿足兩個條件</p>
+<ol>
+<li>訪問對象屬性</li>
+<li>觸發 AttributeError 異常</li>
+</ol>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">A</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    name <span class="token operator">=</span> <span class="token string">"Peter"</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token keyword">def</span> <span class="token function">__getattr__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> item<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="4"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>a <span class="token operator">=</span> A<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre>item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"sex"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="8"></td><td><pre></pre></td></tr><tr><td data-num="9"></td><td><pre>打印結果<span class="token punctuation">:</span> sex</pre></td></tr></table></figure><p>如果經過一系列的找到屬性都沒有找到，并且你給定了默認參數，就會在你沒有找到的情況下，將默認參數返回給你</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_PyObject_LookupAttr</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token operator">&amp;</span>result<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token comment">// 0 表示沒有找到</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    PyObject <span class="token operator">*</span>dflt <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 取出默認參數</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>dflt<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 引用計數 + 1</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token keyword">return</span> dflt<span class="token punctuation">;</span> <span class="token comment">// 返回</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>在我們只給了兩個參數的情況下，如 getattr (a, “name”)，此時會調用 PyObject_GetAttr (v, name)</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre>PyObject <span class="token operator">*</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token function">PyObject_GetAttr</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>v<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>name<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    PyTypeObject <span class="token operator">*</span>tp <span class="token operator">=</span> <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 獲取父類</span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_Check</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="7"></td><td><pre>	<span class="token comment">// 類型檢查</span></pre></td></tr><tr><td data-num="8"></td><td><pre>        <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_TypeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="9"></td><td><pre>                     <span class="token string">"attribute name must be string, not '%.200s'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="10"></td><td><pre>                     <span class="token function">Py_TYPE</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token operator">-></span>tp_name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="11"></td><td><pre>        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="12"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattro <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="14"></td><td><pre>        <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token operator">*</span>tp<span class="token operator">-></span>tp_getattro<span class="token punctuation">)</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>tp_getattr <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>        <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>name_str <span class="token operator">=</span> <span class="token function">PyUnicode_AsUTF8</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>name_str <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="18"></td><td><pre>            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="19"></td><td><pre>        <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token operator">*</span>tp<span class="token operator">-></span>tp_getattr<span class="token punctuation">)</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>name_str<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>    <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="22"></td><td><pre>                 <span class="token string">"'%.50s' object has no attribute '%U'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="23"></td><td><pre>                 tp<span class="token operator">-></span>tp_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>    <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="25"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>處理的事情跟_PyObject_LookupAttr 方法挺相似的，在沒有重載 tp_getattro 的情況下都是調用了_PyObject_GenericGetAttrWithDict 方法，只不過_PyObject_LookupAttr 給_PyObject_GenericGetAttrWithDict 的參數 suppress 傳遞了 1，而調用 PyObject_GetAttr 時，傳遞 suppress 為 0</p>
+<blockquote>
+<p>Make sure the logic of _PyObject_GetMethod is in sync with this method.<br>
+When suppress=1, this function suppress AttributeError.</p>
+</blockquote>
+<p>儅 suppress 為 0 時，如果找不到屬性，則會抛出異常</p>
+<figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>suppress<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="3"></td><td><pre>                 <span class="token string">"'%.50s' object has no attribute '%U'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="4"></td><td><pre>                 tp<span class="token operator">-></span>tp_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>Traceback <span class="token punctuation">(</span>most recent call last<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="2"></td><td><pre>  File <span class="token string">"E:\test.py"</span><span class="token punctuation">,</span> line <span class="token number">12</span><span class="token punctuation">,</span> <span class="token keyword">in</span> <span class="token operator">&lt;</span>module<span class="token operator">></span></pre></td></tr><tr><td data-num="3"></td><td><pre>    item <span class="token operator">=</span> <span class="token builtin">getattr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"age"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="4"></td><td><pre>AttributeError<span class="token punctuation">:</span> <span class="token string">'A'</span> <span class="token builtin">object</span> has no attribute <span class="token string">'age'</span></pre></td></tr></table></figure><p>儅 getattr 設置了默認參數，suppress 就為 1，在沒有找到的情況下，調用_PyObject_GenericGetAttrWithDict 不會引發異常，并在整個查找結果返回為 0 的情況下，會將默認參數取出并作爲結果返回</p>
+
+      <div class="tags">
+          <a href="/tags/CPython/" rel="tag"><i class="ic i-tag"></i> CPython</a>
+          <a href="/tags/C/" rel="tag"><i class="ic i-tag"></i> C</a>
+      </div>
+  </div>
+
+   <footer>
+
+    <div class="meta">
+  <span class="item">
+    <span class="icon">
+      <i class="ic i-calendar-check"></i>
+    </span>
+    <span class="text">Edited on</span>
+    <time title="Modified: 2022-11-04 21:37:53" itemprop="dateModified" datetime="2022-11-04T21:37:53+08:00">2022-11-04</time>
+  </span>
+  <span id="2022/06/08/Python内置getattr實現原理/" class="item leancloud_visitors" data-flag-title="getattr實現原理" title="Views">
+      <span class="icon">
+        <i class="ic i-eye"></i>
+      </span>
+      <span class="text">Views</span>
+      <span class="leancloud-visitors-count"></span>
+      <span class="text">times</span>
+  </span>
+</div>
+
+      
+<div class="reward">
+  <button><i class="ic i-heartbeat"></i> Donate</button>
+  <p>Give me a cup of [coffee]~(￣▽￣)~*</p>
+  <div id="qr">
+      
+      <div>
+        <img data-src="/images/wechatpay.png" alt="小芳芳 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/alipay.png" alt="小芳芳 Alipay">
+        <p>Alipay</p>
+      </div>
+  </div>
+</div>
+
+      
+
+<div id="copyright">
+<ul>
+  <li class="author">
+    <strong>Post author:  </strong>石理一淡 <i class="ic i-at"><em>@</em></i>士多啤梨苹果橙
+  </li>
+  <li class="link">
+    <strong>Post link: </strong>
+    <a href="http://example.com/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" title="getattr實現原理">http://example.com/2022/06/08/Python内置getattr實現原理/</a>
+  </li>
+  <li class="license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="ic i-creative-commons"><em>(CC)</em></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+  </footer>
+
+</article>
+
+  </div>
+  
+
+<div class="post-nav">
+    <div class="item left">
+      
+
+  <a href="/2022/06/06/%E5%93%AA%E4%BA%9BPython%E6%93%8D%E4%BD%9C%E6%98%AFatomic%E7%9A%84%EF%BC%9F/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tva2.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipeuv80yoj20zk0m8kjl.jpg" title="哪些Python操作是atomic的？">
+  <span class="type">Previous Post</span>
+  <span class="category"><i class="ic i-flag"></i> C</span>
+  <h3>哪些Python操作是atomic的？</h3>
+  </a>
+
+    </div>
+    <div class="item right">
+      
+
+  <a href="/2022/06/13/Python%20tuple%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;tva2.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipeuibk9fj20zk0m8ay2.jpg" title="Python Tuple實現原理">
+  <span class="type">Next Post</span>
+  <span class="category"><i class="ic i-flag"></i> C</span>
+  <h3>Python Tuple實現原理</h3>
+  </a>
+
+    </div>
+</div>
+
+  
+  <div class="wrap" id="comments"></div>
+
+
+        </div>
+        <div id="sidebar">
+          
+
+<div class="inner">
+
+  <div class="panels">
+    <div class="inner">
+      <div class="contents panel pjax" data-title="Contents">
+          <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#getattr%E7%9A%84%E8%83%8C%E5%BE%8C%E5%AF%A6%E7%8F%BE%E6%A9%9F%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text"> getattr 的背後實現機制</span></a></li></ol>
+      </div>
+      <div class="related panel pjax" data-title="Related">
+        <ul>
+          <li><a href="/2022/06/06/%E5%93%AA%E4%BA%9BPython%E6%93%8D%E4%BD%9C%E6%98%AFatomic%E7%9A%84%EF%BC%9F/" rel="bookmark" title="哪些Python操作是atomic的？">哪些Python操作是atomic的？</a></li><li class="active"><a href="/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="getattr實現原理">getattr實現原理</a></li><li><a href="/2022/06/13/Python%20tuple%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python Tuple實現原理">Python Tuple實現原理</a></li><li><a href="/2022/06/22/Python%20range%E7%9A%84%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python range的實現原理">Python range的實現原理</a></li><li><a href="/2022/06/23/CPython-VM%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="bookmark" title="CPython VM的工作原理">CPython VM的工作原理</a></li><li><a href="/2022/06/28/Python%20map%E5%AF%B9%E8%B1%A1%E6%8E%A2%E7%A9%B6/" rel="bookmark" title="Python map对象探究">Python map对象探究</a></li><li><a href="/2022/07/06/Python%20zip%E5%86%85%E7%BD%AE%E7%B1%BB%E7%9A%84%E8%83%8C%E5%90%8E%E6%9C%BA%E5%88%B6/" rel="bookmark" title="Python zip内置类的背后机制">Python zip内置类的背后机制</a></li><li><a href="/2022/08/03/Python%20list%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python list实现原理">Python list实现原理</a></li><li><a href="/2022/08/12/Python%20Property%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="bookmark" title="Property源码分析">Property源码分析</a></li><li><a href="/2022/11/02/Python%E7%9A%84%E5%B1%9E%E6%80%A7%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" rel="bookmark" title="Python的属性是如何工作的">Python的属性是如何工作的</a></li>
+        </ul>
+      </div>
+      <div class="overview panel" data-title="Overview">
+        <div class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="image" itemprop="image" alt="小芳芳"
+      data-src="/images/avatar.png">
+  <p class="name" itemprop="name">小芳芳</p>
+  <div class="description" itemprop="description"></div>
+</div>
+
+<nav class="state">
+    <div class="item posts">
+      <a href="/archives/">
+        <span class="count">14</span>
+        <span class="name">posts</span>
+      </a>
+    </div>
+    <div class="item categories">
+      <a href="/categories/">
+        <span class="count">9</span>
+        <span class="name">categories</span>
+      </a>
+    </div>
+    <div class="item tags">
+      <a href="/tags/">
+        <span class="count">8</span>
+        <span class="name">tags</span>
+      </a>
+    </div>
+</nav>
+
+<div class="social">
+      <span class="exturl item github" data-url="aHR0cHM6Ly9naXRodWIuY29tL0NMQVktemhhbw==" title="https:&#x2F;&#x2F;github.com&#x2F;CLAY-zhao"><i class="ic i-github"></i></span>
+      <span class="exturl item bilibili" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMjkxMzUwNTA=" title="https:&#x2F;&#x2F;space.bilibili.com&#x2F;29135050"><i class="ic i-bilibili"></i></span>
+</div>
+
+<ul class="menu">
+  
+    
+  <li class="item">
+    <a href="/" rel="section"><i class="ic i-home"></i>Home</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/about/" rel="section"><i class="ic i-user"></i>About</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/archives/" rel="section"><i class="ic i-list-alt"></i>Archives</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/categories/" rel="section"><i class="ic i-th"></i>Categories</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/tags/" rel="section"><i class="ic i-tags"></i>Tags</a>
+  </li>
+
+  </ul>
+    
+  <li class="item">
+    <a href="/friends/" rel="section"><i class="ic i-heart"></i>friends</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/links/" rel="section"><i class="ic i-magic"></i>links</a>
+  </li>
+
+
+</ul>
+
+      </div>
+    </div>
+  </div>
+
+  <ul id="quick">
+    <li class="prev pjax">
+        <a href="/2022/06/06/%E5%93%AA%E4%BA%9BPython%E6%93%8D%E4%BD%9C%E6%98%AFatomic%E7%9A%84%EF%BC%9F/" rel="prev" title="Previous Post"><i class="ic i-chevron-left"></i></a>
+    </li>
+    <li class="up"><i class="ic i-arrow-up"></i></li>
+    <li class="down"><i class="ic i-arrow-down"></i></li>
+    <li class="next pjax">
+        <a href="/2022/06/13/Python%20tuple%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="next" title="Next Post"><i class="ic i-chevron-right"></i></a>
+    </li>
+    <li class="percent"></li>
+  </ul>
+</div>
+
+
+        </div>
+        <div class="dimmer"></div>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="inner">
+        <div class="widgets">
+          
+<div class="rpost pjax">
+  <h2>Random Posts</h2>
+  <ul>
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/06/28/Python%20map%E5%AF%B9%E8%B1%A1%E6%8E%A2%E7%A9%B6/" title="Python map对象探究">Python map对象探究</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/08/12/Python%20Property%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" title="Property源码分析">Property源码分析</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Python/" title="In Python">Python</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/Python/Django/" title="In Django">Django</a>
+</div>
+
+    <span><a href="/2022/10/19/Python%20Django%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E6%97%B6%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" title="Python Django服务启动时做了什么?">Python Django服务启动时做了什么?</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/Python/" title="In Python">Python</a>
+</div>
+
+    <span><a href="/2022/06/22/Python%20range%E7%9A%84%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" title="Python range的實現原理">Python range的實現原理</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/06/06/%E5%93%AA%E4%BA%9BPython%E6%93%8D%E4%BD%9C%E6%98%AFatomic%E7%9A%84%EF%BC%9F/" title="哪些Python操作是atomic的？">哪些Python操作是atomic的？</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/11/02/Python%E7%9A%84%E5%B1%9E%E6%80%A7%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" title="Python的属性是如何工作的">Python的属性是如何工作的</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" title="getattr實現原理">getattr實現原理</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/game/" title="In game">game</a>
+</div>
+
+    <span><a href="/2022/11/04/%E6%81%90%E9%AC%BC%E7%97%87%E5%8D%95%E9%80%9A-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%9A%BE%E5%BA%A6-%E6%97%A0%E8%BA%B2%E8%97%8F%E7%82%B9/" title="恐鬼症单通 自定义难度 无躲藏点!">恐鬼症单通 自定义难度 无躲藏点!</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/06/23/CPython-VM%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" title="CPython VM的工作原理">CPython VM的工作原理</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/08/03/Python%20list%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" title="Python list实现原理">Python list实现原理</a></span>
+  </li>
+
+  </ul>
+</div>
+<div>
+  <h2>Recent Comments</h2>
+  <ul class="leancloud-recent-comment"></ul>
+</div>
+
+        </div>
+        <div class="status">
+  <div class="copyright">
+    
+    &copy; 2010 – 
+    <span itemprop="copyrightYear">2022</span>
+    <span class="with-love">
+      <i class="ic i-sakura rotate"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">小芳芳 @ Leayoos Chui</span>
+  </div>
+</div>
+
+      </div>
+    </footer>
+  </div>
+<script data-config type="text/javascript">
+  var LOCAL = {
+    path: '2022/06/08/Python内置getattr實現原理/',
+    favicon: {
+      show: "（●´3｀●）Goooood",
+      hide: "(´Д｀)Booooom"
+    },
+    search : {
+      placeholder: "Search for Posts",
+      empty: "We didn't find any results for the search: ${query}",
+      stats: "${hits} results found in ${time} ms"
+    },
+    valine: true,fancybox: true,
+    copyright: 'Copied to clipboard successfully! <br> All articles in this blog are licensed under <i class="ic i-creative-commons"></i>BY-NC-SA.',
+    ignores : [
+      function(uri) {
+        return uri.includes('#');
+      },
+      function(uri) {
+        return new RegExp(LOCAL.path+"$").test(uri);
+      }
+    ]
+  };
+</script>
+
+<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
+
+<script src="//cdn.jsdelivr.net/combine/npm/pace-js@1.0.2/pace.min.js,npm/pjax@0.2.8/pjax.min.js,npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js,npm/animejs@3.2.0/lib/anime.min.js,npm/algoliasearch@4/dist/algoliasearch-lite.umd.js,npm/instantsearch.js@4/dist/instantsearch.production.min.js,npm/lozad@1/dist/lozad.min.js,npm/quicklink@2/dist/quicklink.umd.js"></script>
+
+<script src="/js/app.js?v=0.2.5"></script>
+
+
+
+
+</body>
+</html>
