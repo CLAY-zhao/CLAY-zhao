@@ -1,0 +1,581 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#FFF">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="icon" type="image/ico" sizes="32x32" href="/images/favicon.ico">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+<link rel="alternate" type="application/rss+xml" title="神的直觉" href="http://example.com/rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="神的直觉" href="http://example.com/atom.xml" />
+<link rel="alternate" type="application/json" title="神的直觉" href="http://example.com/feed.json" />
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Mulish:300,300italic,400,400italic,700,700italic%7CFredericka%20the%20Great:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20JP:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20SC:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="/css/app.css?v=0.2.5">
+
+  
+  <meta name="keywords" content="CPython,C" />
+
+
+<link rel="canonical" href="http://example.com/2024/06/13/Django%E5%85%AC%E4%BC%97%E5%8F%B7%E5%AF%B9%E6%8E%A5%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98%E9%98%B2%E8%B8%A9%E5%B1%8E/">
+
+
+
+  <title>
+Django公众号对接微信支付防踩屎 - C - CPython |
+Waim Chiu = 神的直觉</title>
+<meta name="generator" content="Hexo 5.4.2"></head>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div id="loading">
+    <div class="cat">
+      <div class="body"></div>
+      <div class="head">
+        <div class="face"></div>
+      </div>
+      <div class="foot">
+        <div class="tummy-end"></div>
+        <div class="bottom"></div>
+        <div class="legs left"></div>
+        <div class="legs right"></div>
+      </div>
+      <div class="paw">
+        <div class="hands left"></div>
+        <div class="hands right"></div>
+      </div>
+    </div>
+  </div>
+  <div id="container">
+    <header id="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="inner">
+        <div id="brand">
+          <div class="pjax">
+          
+  <h1 itemprop="name headline">Django公众号对接微信支付防踩屎
+  </h1>
+  
+<div class="meta">
+  <span class="item" title="Created: 2024-06-13 19:40:15">
+    <span class="icon">
+      <i class="ic i-calendar"></i>
+    </span>
+    <span class="text">Posted on</span>
+    <time itemprop="dateCreated datePublished" datetime="2024-06-13T19:40:15+08:00">2024-06-13</time>
+  </span>
+</div>
+
+
+          </div>
+        </div>
+        <nav id="nav">
+  <div class="inner">
+    <div class="toggle">
+      <div class="lines" aria-label="Toggle navigation bar">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </div>
+    </div>
+    <ul class="menu">
+      <li class="item title"><a href="/" rel="start">Waim Chiu</a></li>
+    </ul>
+    <ul class="right">
+      <li class="item theme">
+        <i class="ic i-sun"></i>
+      </li>
+      <li class="item search">
+        <i class="ic i-search"></i>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+      </div>
+      <div id="imgs" class="pjax">
+        <ul>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?137250"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?191897"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?433794"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?834624"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?842967"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?427486"></li>
+        </ul>
+      </div>
+    </header>
+    <div id="waves">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
+    </div>
+    <main>
+      <div class="inner">
+        <div id="main" class="pjax">
+          
+  <div class="article wrap">
+    
+<div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<i class="ic i-home"></i>
+<span><a href="/">Home</a></span><i class="ic i-angle-right"></i>
+<span  itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/categories/CPython/" itemprop="item" rel="index" title="In CPython"><span itemprop="name">CPython</span></a>
+<meta itemprop="position" content="1" /></span>
+<i class="ic i-angle-right"></i>
+<span  class="current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="/categories/CPython/C/" itemprop="item" rel="index" title="In C"><span itemprop="name">C</span></a>
+<meta itemprop="position" content="2" /></span>
+</div>
+
+    <article itemscope itemtype="http://schema.org/Article" class="post block" lang="en">
+  <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/13/Django%E5%85%AC%E4%BC%97%E5%8F%B7%E5%AF%B9%E6%8E%A5%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98%E9%98%B2%E8%B8%A9%E5%B1%8E/">
+
+  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="image" content="/images/avatar.png">
+    <meta itemprop="name" content="小芳芳">
+    <meta itemprop="description" content=", 又战斗来又生产">
+  </span>
+
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="神的直觉">
+  </span>
+
+  <div class="body md" itemprop="articleBody">
+    
+
+    <h1 id="django如何对接公众号调起微信支付"><a class="markdownIt-Anchor" href="#django如何对接公众号调起微信支付">#</a> Django 如何对接公众号调起微信支付</h1>
+<blockquote>
+<p>我只讲重要的部分，其他像申请什么公众号资料、商户号等都不在这倾述，因为太多了，需要的自己去网上搜一搜别人的案例，看看需要什么</p>
+</blockquote>
+<p>首先在 Django 可以安装 wechatpy 模块，由于微信支付的 sdk 方面并没有很好的支持 Python，至少我没看见（没查到），wechatpy 是第三方微信支付的 sdk，使用该模块可以忽略很多加密的部分，减少代码量，详细可以参考官方文档</p>
+<blockquote>
+<p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3dlY2hhdHB5L3dlY2hhdHB5">https://github.com/wechatpy/wechatpy</span></p>
+</blockquote>
+<p>另外，wechatpy 也使用到了 cryptography 模块，在 window 安装多半会报错，这时你可以升级一下 pip，在进行安装即可。</p>
+<h3 id="公众号及证书-域名配置"><a class="markdownIt-Anchor" href="#公众号及证书-域名配置">#</a> 公众号及证书、域名配置</h3>
+<p>在公众号后台，找到设置与开发 -&gt; 接口权限，找到 “网页授权获取用户基本信息”，点击设置</p>
+<blockquote>
+<p>注意：如果不是企业号，是不支持微信支付的</p>
+</blockquote>
+<p><img data-src="https://s3.bmp.ovh/imgs/2024/06/13/a4eb822c6ad1f866.png" alt=""></p>
+<p>前提你需要有能访问的外网，或者自己弄一个内网穿透，才能设置成功，在你点击设置域名时，在注意事项中，你需将提示中的 txt 文件下载，放到你服务器的根目录，确保能访问到即可，这时点击保存修改才能成功，否则会报错提示为找到 txt 文件</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2024/06/13/1580ce92852e39b8.png" alt=""></p>
+<p>你的网页授权域名设置时，比如你的 H5，也要确保 txt 能访问到，如 vue3，直接放到 public 目录即可。对于 JS 接口安全域名，因为使用的是 Django，所以你也需要将 txt 文件放到 templates 目录，因为 Django 默认配置下是在 templates 目录里中查找，然后在 urls 中配置文件路径</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> django<span class="token punctuation">.</span>urls <span class="token keyword">import</span> path</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> django<span class="token punctuation">.</span>views<span class="token punctuation">.</span>generic<span class="token punctuation">.</span>base <span class="token keyword">import</span> TemplateView</pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>urlpatterns <span class="token operator">=</span> <span class="token punctuation">[</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    path<span class="token punctuation">(</span><span class="token string">'MP_verify_3wHwPaaUMrpct6Fu.txt'</span><span class="token punctuation">,</span> TemplateView<span class="token punctuation">.</span>as_view<span class="token punctuation">(</span>template_name<span class="token operator">=</span><span class="token string">"MP_verify_3wHwPaaUMrpct6Fu.txt"</span><span class="token punctuation">,</span> content_type<span class="token operator">=</span><span class="token string">"text/plain"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">]</span></pre></td></tr></table></figure><blockquote>
+<p>接口权限地址：<span class="exturl" data-url="aHR0cHM6Ly9tcC53ZWl4aW4ucXEuY29tL2FkdmFuY2VkL2FkdmFuY2VkP2FjdGlvbj10YWJsZSZhbXA7dG9rZW49MTYyMjUxOTIxJmFtcDtsYW5nPXpoX0NO">https://mp.weixin.qq.com/advanced/advanced?action=table&amp;token=162251921&amp;lang=zh_CN</span></p>
+</blockquote>
+<p>接下来找到设置与开发 -&gt; 基本设置，找到 appId 和 appSecret<br>
+<img data-src="https://s3.bmp.ovh/imgs/2024/06/13/1fa2a43d193c5184.png" alt=""></p>
+<p>在你后端调用获取获取微信用户信息时需要用到，比如 openid，其他的数据看需不需要</p>
+<blockquote>
+<p>获取授权文档：<span class="exturl" data-url="aHR0cHM6Ly9kZXZlbG9wZXJzLndlaXhpbi5xcS5jb20vZG9jL29mZmlhY2NvdW50L0Jhc2ljX0luZm9ybWF0aW9uL0dldF9hY2Nlc3NfdG9rZW4uaHRtbA==">https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html</span></p>
+</blockquote>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">import</span> requests</pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre>params <span class="token operator">=</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>  <span class="token string">"grant_type"</span><span class="token punctuation">:</span> <span class="token string">"authorization_code"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>  <span class="token string">"appid"</span><span class="token punctuation">:</span> <span class="token string">"appId"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre>  <span class="token string">"secret"</span><span class="token punctuation">:</span> <span class="token string">"appSecret"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="7"></td><td><pre>  <span class="token string">"code"</span><span class="token punctuation">:</span> <span class="token string">"前端页面获取的code值，具体看下面"</span></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="9"></td><td><pre>response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token operator">=</span><span class="token string">"https://api.weixin.qq.com/sns/oauth2/access_token"</span><span class="token punctuation">,</span> params<span class="token operator">=</span>params<span class="token punctuation">)</span></pre></td></tr></table></figure><p>在你的公众号页面中，比如登录页，你要先获取 code 值传递到后端才能得到 access_token，然后根据该 access_token 值才能真正获取到微信用户的基本信息，最重要时 openid，在测试支付时，你必须使用的是正式环境下获取的用户 openid，因为你如果使用测试账户获取的 openid，实际是和正式环境不一样的，需要注意。</p>
+<p>在网页中你可以使用跳转的方式获取到 code 值，比如</p>
+<figure class="highlight js"><figcaption data-lang="JavaScript"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">const</span> redirectUrl <span class="token operator">=</span> window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href</pre></td></tr><tr><td data-num="2"></td><td><pre>  <span class="token keyword">if</span> <span class="token punctuation">(</span>redirectUrl<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span><span class="token string">'code'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token keyword">this</span><span class="token punctuation">.</span>code <span class="token operator">=</span> redirectUrl<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'?'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'&amp;'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'='</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="4"></td><td><pre>  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">https://open.weixin.qq.com/connect/oauth2/authorize?appid=appId&amp;redirect_uri=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token function">encodeURIComponent</span><span class="token punctuation">(</span>redirectUrl<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">&amp;response_type=code&amp;scope=snsapi_userinfo&amp;state=STATE#wechat_redirect&amp;forcePopup</span><span class="token template-punctuation string">`</span></span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token comment">//snsapi_userinfo 参数会有弹窗提示用户是否授权，可以获取更多的用户信息，而 snsapi_base 是静默授权，只能获取 openid</span></pre></td></tr></table></figure><p>对于 redirect_uri 参数重定向的链接，你需要在前面先设置好网页授权域名才可以，否则会有问题，我记得是。。。然后还有 appId 参数，比如与公众号的 appId 一致，还有后端。</p>
+<h3 id="django生成预支付订单"><a class="markdownIt-Anchor" href="#django生成预支付订单">#</a> Django 生成预支付订单</h3>
+<p>前面的配置工作应该差不多了，这时回到 Django 中，使用 wechatpy 模块生成预支付订单参数，那么在次之前，你需要在微信商户平台中申请好 API 证书、V2、V3、平台证书，调用 wechatpy 时会用到</p>
+<blockquote>
+<p>微信商户平台：<span class="exturl" data-url="aHR0cHM6Ly9wYXkud2VpeGluLnFxLmNvbS9pbmRleC5waHAvY29yZS9ob21lL2xvZ2lu">https://pay.weixin.qq.com/index.php/core/home/login</span></p>
+</blockquote>
+<p><img data-src="https://s3.bmp.ovh/imgs/2024/06/13/09421031d7b58762.png" alt=""></p>
+<p>然后将这些证书配置放到 Django 项目，首先我们需要导入 wechatpy 模块</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> wechatpy<span class="token punctuation">.</span>pay <span class="token keyword">import</span> WeChatPay</pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre>client <span class="token operator">=</span> WeChatPay<span class="token punctuation">(</span></pre></td></tr><tr><td data-num="4"></td><td><pre>  appid<span class="token operator">=</span><span class="token string">"appId"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>  mch_id<span class="token operator">=</span><span class="token string">"商户号ID"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre>  api_key<span class="token operator">=</span><span class="token string">"v2或v3的密钥值"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="7"></td><td><pre>  mch_cert<span class="token operator">=</span><span class="token string">"apiclient_cert.pem证书路径"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="8"></td><td><pre>  mch_key<span class="token operator">=</span><span class="token string">"apiclient_key.pem文件路径"</span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="10"></td><td><pre></pre></td></tr><tr><td data-num="11"></td><td><pre><span class="token comment"># apiclient_cert.pem 与 apiclient_key.pem 都在你下载下来的证书压缩包里面，解压就能找到</span></pre></td></tr></table></figure><p>接着我们调用 client 生成预订单参数</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>create_result <span class="token operator">=</span> client<span class="token punctuation">.</span>order<span class="token punctuation">.</span>create<span class="token punctuation">(</span></pre></td></tr><tr><td data-num="2"></td><td><pre>  trade_type<span class="token operator">=</span><span class="token string">"交易类型，取值的JSAPI"</span><span class="token punctuation">,</span> body<span class="token operator">=</span><span class="token string">"商品描述"</span><span class="token punctuation">,</span> total_fee<span class="token operator">=</span><span class="token string">"订单总金额，单位为分"</span><span class="token punctuation">,</span> notify_url<span class="token operator">=</span><span class="token string">"微信支付成功回调"</span><span class="token punctuation">,</span> user_id<span class="token operator">=</span>openid<span class="token punctuation">,</span> out_trade_no<span class="token operator">=</span><span class="token string">"商户订单号"</span><span class="token punctuation">,</span> fee_type<span class="token operator">=</span><span class="token string">"默认CNY"</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="4"></td><td><pre></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token comment"># 还有其他参数可以看源码</span></pre></td></tr></table></figure><p>调用成功的情况下你会得到一个 dict，最主要是里面的 prepay_id 值，我们将 prepay_id 值再传递到 client 里进行二次加密，一定要再做二次加密，不然调用支付弹窗会失败，提示【unable to verify signature】</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>params <span class="token operator">=</span> client<span class="token punctuation">.</span>jsapi<span class="token punctuation">.</span>get_jsapi_params<span class="token punctuation">(</span>create_result<span class="token punctuation">[</span><span class="token string">"prepay_id"</span><span class="token punctuation">]</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token comment"># 加密成功后你会得到 params: &#123;'appId': '123', 'timeStamp': '123', 'nonceStr': 'abc', 'package': 'prepay_id=123', 'signType': 'MD5', 'paySign': '123abc'&#125;</span></pre></td></tr></table></figure><p>这是我们才能拿到正确的微信支付参数，然后我们将得到的 params 返回给前端进行调用</p>
+<figure class="highlight js"><figcaption data-lang="JavaScript"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment">// 在微信浏览器中调用，没问题得到调用后会弹出微信支付的窗口，说明成功了</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token comment">// 但正常情况下你可能还是报错了，大概率提示【URL not registered http://www.xxx.com/xxx/xxx】，看下边</span></pre></td></tr><tr><td data-num="3"></td><td><pre>WeixinJSBridge<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span><span class="token string">'getBrandWCPayRequest'</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="4"></td><td><pre>  <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token literal-property property">appId</span><span class="token operator">:</span> appId<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    <span class="token literal-property property">timeStamp</span><span class="token operator">:</span> timeStamp<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token literal-property property">nonceStr</span><span class="token operator">:</span> nonceStr<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="8"></td><td><pre>    <span class="token keyword">package</span><span class="token operator">:</span> <span class="token keyword">package</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="9"></td><td><pre>    <span class="token literal-property property">signType</span><span class="token operator">:</span> signType<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token literal-property property">paySign</span><span class="token operator">:</span> paySign</pre></td></tr><tr><td data-num="11"></td><td><pre>  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="12"></td><td><pre>  <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">res</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>res<span class="token punctuation">.</span>err_msg <span class="token operator">==</span> <span class="token string">"get_brand_wcpay_request:ok"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"支付成功!"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="15"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>  <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="17"></td><td><pre><span class="token punctuation">)</span></pre></td></tr></table></figure><p>这是因为我们忘记配置支付授权目录了，也是你当前支付页面的路由地址</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2024/06/13/455db02dcab7f515.png" alt=""></p>
+<p>我们需要在微信商户平台的产品中心 -&gt; 开发配置中，修改支付配置的 JSAPI 支付，在支付授权目录中添加你当前支付页的路劲</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2024/06/13/fccd12522fdbffbf.png" alt=""></p>
+<p>要注意，添加路劲时比如加上斜杠 “/” 结尾，所以我们在调用微信支付前还需要修改一下路劲，不然还是会一直提示你地址未注册</p>
+<figure class="highlight js"><figcaption data-lang="JavaScript"></figcaption><table><tr><td data-num="1"></td><td><pre>history<span class="token punctuation">.</span><span class="token function">pushState</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token string">"/xxx/"</span><span class="token punctuation">)</span></pre></td></tr></table></figure><p>那么基本上微信支付接口就没什么问题了，OK！</p>
+<div align=center width=100%><iframe class="video-frame" height=500 width=80% frameborder=0 allowfullscreen src="//player.bilibili.com/player.html?isOutside=true&aid=1003746237&bvid=BV1ox4y1678j&cid=1517246563&p=1" ></iframe></div>
+
+      <div class="tags">
+          <a href="/tags/CPython/" rel="tag"><i class="ic i-tag"></i> CPython</a>
+          <a href="/tags/C/" rel="tag"><i class="ic i-tag"></i> C</a>
+      </div>
+  </div>
+
+   <footer>
+
+    <div class="meta">
+  <span class="item">
+    <span class="icon">
+      <i class="ic i-calendar-check"></i>
+    </span>
+    <span class="text">Edited on</span>
+    <time title="Modified: 2024-06-13 21:26:53" itemprop="dateModified" datetime="2024-06-13T21:26:53+08:00">2024-06-13</time>
+  </span>
+  <span id="2024/06/13/Django公众号对接微信支付防踩屎/" class="item leancloud_visitors" data-flag-title="Django公众号对接微信支付防踩屎" title="Views">
+      <span class="icon">
+        <i class="ic i-eye"></i>
+      </span>
+      <span class="text">Views</span>
+      <span class="leancloud-visitors-count"></span>
+      <span class="text">times</span>
+  </span>
+</div>
+
+      
+<div class="reward">
+  <button><i class="ic i-heartbeat"></i> Donate</button>
+  <p>Give me a cup of [coffee]~(￣▽￣)~*</p>
+  <div id="qr">
+      
+      <div>
+        <img data-src="/images/wechatpay.png" alt="小芳芳 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/alipay.png" alt="小芳芳 Alipay">
+        <p>Alipay</p>
+      </div>
+  </div>
+</div>
+
+      
+
+<div id="copyright">
+<ul>
+  <li class="author">
+    <strong>Post author:  </strong>石理一淡 <i class="ic i-at"><em>@</em></i>神的直觉
+  </li>
+  <li class="link">
+    <strong>Post link: </strong>
+    <a href="http://example.com/2024/06/13/Django%E5%85%AC%E4%BC%97%E5%8F%B7%E5%AF%B9%E6%8E%A5%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98%E9%98%B2%E8%B8%A9%E5%B1%8E/" title="Django公众号对接微信支付防踩屎">http://example.com/2024/06/13/Django公众号对接微信支付防踩屎/</a>
+  </li>
+  <li class="license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="ic i-creative-commons"><em>(CC)</em></i>BY-NC-SA</span> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+  </footer>
+
+</article>
+
+  </div>
+  
+
+<div class="post-nav">
+    <div class="item left">
+      
+
+  <a href="/2023/11/16/CPython%E4%B8%AD%E5%8F%98%E9%87%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tuapi.eees.cc&#x2F;api.php?category&#x3D;dongman&amp;type&#x3D;302&amp;?203995" title="CPython中变量是如何实现的">
+  <span class="type">Previous Post</span>
+  <span class="category"><i class="ic i-flag"></i> C</span>
+  <h3>CPython中变量是如何实现的</h3>
+  </a>
+
+    </div>
+    <div class="item right">
+    </div>
+</div>
+
+  
+  <div class="wrap" id="comments"></div>
+
+
+        </div>
+        <div id="sidebar">
+          
+
+<div class="inner">
+
+  <div class="panels">
+    <div class="inner">
+      <div class="contents panel pjax" data-title="Contents">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#django%E5%A6%82%E4%BD%95%E5%AF%B9%E6%8E%A5%E5%85%AC%E4%BC%97%E5%8F%B7%E8%B0%83%E8%B5%B7%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98"><span class="toc-number">1.</span> <span class="toc-text"> Django 如何对接公众号调起微信支付</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E4%BC%97%E5%8F%B7%E5%8F%8A%E8%AF%81%E4%B9%A6-%E5%9F%9F%E5%90%8D%E9%85%8D%E7%BD%AE"><span class="toc-number">1.0.1.</span> <span class="toc-text"> 公众号及证书、域名配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#django%E7%94%9F%E6%88%90%E9%A2%84%E6%94%AF%E4%BB%98%E8%AE%A2%E5%8D%95"><span class="toc-number">1.0.2.</span> <span class="toc-text"> Django 生成预支付订单</span></a></li></ol></li></ol></li></ol>
+      </div>
+      <div class="related panel pjax" data-title="Related">
+        <ul>
+          <li><a href="/2022/06/06/%E5%93%AA%E4%BA%9BPython%E6%93%8D%E4%BD%9C%E6%98%AFatomic%E7%9A%84%EF%BC%9F/" rel="bookmark" title="哪些Python操作是atomic的？">哪些Python操作是atomic的？</a></li><li><a href="/2022/06/08/Python%E5%86%85%E7%BD%AEgetattr%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="getattr實現原理">getattr實現原理</a></li><li><a href="/2022/06/13/Python%20tuple%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python Tuple實現原理">Python Tuple實現原理</a></li><li><a href="/2022/06/22/Python%20range%E7%9A%84%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python range的實現原理">Python range的實現原理</a></li><li><a href="/2022/06/23/CPython-VM%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="bookmark" title="CPython VM的工作原理">CPython VM的工作原理</a></li><li><a href="/2022/06/28/Python%20map%E5%AF%B9%E8%B1%A1%E6%8E%A2%E7%A9%B6/" rel="bookmark" title="Python map对象探究">Python map对象探究</a></li><li><a href="/2022/07/06/Python%20zip%E5%86%85%E7%BD%AE%E7%B1%BB%E7%9A%84%E8%83%8C%E5%90%8E%E6%9C%BA%E5%88%B6/" rel="bookmark" title="Python zip内置类的背后机制">Python zip内置类的背后机制</a></li><li><a href="/2022/08/03/Python%20list%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="bookmark" title="Python list实现原理">Python list实现原理</a></li><li><a href="/2022/08/12/Python%20Property%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="bookmark" title="Property源码分析">Property源码分析</a></li><li><a href="/2022/11/02/Python%E7%9A%84%E5%B1%9E%E6%80%A7%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" rel="bookmark" title="Python的属性是如何工作的">Python的属性是如何工作的</a></li><li><a href="/2023/08/14/Python%20import%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="bookmark" title="Python import源码分析">Python import源码分析</a></li><li><a href="/2023/11/16/CPython%E4%B8%AD%E5%8F%98%E9%87%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" rel="bookmark" title="CPython中变量是如何实现的">CPython中变量是如何实现的</a></li><li class="active"><a href="/2024/06/13/Django%E5%85%AC%E4%BC%97%E5%8F%B7%E5%AF%B9%E6%8E%A5%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98%E9%98%B2%E8%B8%A9%E5%B1%8E/" rel="bookmark" title="Django公众号对接微信支付防踩屎">Django公众号对接微信支付防踩屎</a></li>
+        </ul>
+      </div>
+      <div class="overview panel" data-title="Overview">
+        <div class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="image" itemprop="image" alt="小芳芳"
+      data-src="/images/avatar.png">
+  <p class="name" itemprop="name">小芳芳</p>
+  <div class="description" itemprop="description">又战斗来又生产</div>
+</div>
+
+<nav class="state">
+    <div class="item posts">
+      <a href="/archives/">
+        <span class="count">34</span>
+        <span class="name">posts</span>
+      </a>
+    </div>
+    <div class="item categories">
+      <a href="/categories/">
+        <span class="count">18</span>
+        <span class="name">categories</span>
+      </a>
+    </div>
+    <div class="item tags">
+      <a href="/tags/">
+        <span class="count">20</span>
+        <span class="name">tags</span>
+      </a>
+    </div>
+</nav>
+
+<div class="social">
+      <span class="exturl item github" data-url="aHR0cHM6Ly9naXRodWIuY29tL0NMQVktemhhbw==" title="https:&#x2F;&#x2F;github.com&#x2F;CLAY-zhao"><i class="ic i-github"></i></span>
+      <span class="exturl item bilibili" data-url="aHR0cHM6Ly9zcGFjZS5iaWxpYmlsaS5jb20vMjkxMzUwNTA=" title="https:&#x2F;&#x2F;space.bilibili.com&#x2F;29135050"><i class="ic i-bilibili"></i></span>
+      <span class="exturl item music" data-url="aHR0cHM6Ly9tdXNpYy4xNjMuY29tLyMvdXNlci9ob21lP2lkPTEyMzkzMjE0MA==" title="https:&#x2F;&#x2F;music.163.com&#x2F;#&#x2F;user&#x2F;home?id&#x3D;123932140"><i class="ic i-cloud-music"></i></span>
+</div>
+
+<ul class="menu">
+  
+    
+  <li class="item">
+    <a href="/" rel="section"><i class="ic i-home"></i>首页</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/about/" rel="section"><i class="ic i-user"></i>关于我</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/archives/" rel="section"><i class="ic i-list-alt"></i>文章</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/categories/" rel="section"><i class="ic i-th"></i>分類</a>
+  </li>
+
+        
+  <li class="item">
+    <a href="/tags/" rel="section"><i class="ic i-tags"></i>標簽</a>
+  </li>
+
+  </ul>
+    
+  <li class="item">
+    <a href="/friends/" rel="section"><i class="ic i-heart"></i>友鏈</a>
+  </li>
+
+    
+  <li class="item">
+    <a href="/links/" rel="section"><i class="ic i-magic"></i>網址</a>
+  </li>
+
+
+</ul>
+
+      </div>
+    </div>
+  </div>
+
+  <ul id="quick">
+    <li class="prev pjax">
+    </li>
+    <li class="up"><i class="ic i-arrow-up"></i></li>
+    <li class="down"><i class="ic i-arrow-down"></i></li>
+    <li class="next pjax">
+    </li>
+    <li class="percent"></li>
+  </ul>
+</div>
+
+
+        </div>
+        <div class="dimmer"></div>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="inner">
+        <div class="widgets">
+          
+<div class="rpost pjax">
+  <h2>Random Posts</h2>
+  <ul>
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/06/28/Python%20map%E5%AF%B9%E8%B1%A1%E6%8E%A2%E7%A9%B6/" title="Python map对象探究">Python map对象探究</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Linux-Docker/" title="In Linux Docker">Linux Docker</a>
+</div>
+
+    <span><a href="/2023/01/04/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E7%AF%87/" title="Docker基本操作篇">Docker基本操作篇</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2023/11/16/CPython%E4%B8%AD%E5%8F%98%E9%87%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" title="CPython中变量是如何实现的">CPython中变量是如何实现的</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/python/" title="In python">python</a>
+</div>
+
+    <span><a href="/2022/11/22/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%8A%93%E5%8C%85/" title="微信小程序抓包">微信小程序抓包</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython-C/" title="In CPython C">CPython C</a>
+</div>
+
+    <span><a href="/2022/11/07/Inside-The-Python-Virtual-Machine-Compliling-Python-Source-Code/" title="Inside The Python Virtual Machine - Compliling Python Source Code">Inside The Python Virtual Machine - Compliling Python Source Code</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/game/" title="In game">game</a>
+</div>
+
+    <span><a href="/2022/11/14/Cookie-Run-Kingdom%E6%B4%BB%E5%8A%A8-B-A-D-4/" title="Cookie Run Kingdom活动 - B.A.D.4">Cookie Run Kingdom活动 - B.A.D.4</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2022/11/02/Python%E7%9A%84%E5%B1%9E%E6%80%A7%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" title="Python的属性是如何工作的">Python的属性是如何工作的</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython/" title="In CPython">CPython</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/" title="In C">C</a>
+</div>
+
+    <span><a href="/2023/08/14/Python%20import%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" title="Python import源码分析">Python import源码分析</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/CPython-C/" title="In CPython C">CPython C</a>
+</div>
+
+    <span><a href="/2023/02/17/Inside-The-Python-Virtual-Machine-Code-Objects/" title="Inside-The-Python-Virtual-Machine-Code Objects">Inside-The-Python-Virtual-Machine-Code Objects</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Python/" title="In Python">Python</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/Python/Django/" title="In Django">Django</a>
+</div>
+
+    <span><a href="/2022/10/19/Python%20Django%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E6%97%B6%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" title="Python Django服务启动时做了什么?">Python Django服务启动时做了什么?</a></span>
+  </li>
+
+  </ul>
+</div>
+<div>
+  <h2>Recent Comments</h2>
+  <ul class="leancloud-recent-comment"></ul>
+</div>
+
+        </div>
+        <div class="status">
+  <div class="copyright">
+    
+    &copy; 2010 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="ic i-sakura rotate"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">小芳芳 @ Waim Chiu</span>
+  </div>
+</div>
+
+      </div>
+    </footer>
+  </div>
+<script data-config type="text/javascript">
+  var LOCAL = {
+    path: '2024/06/13/Django公众号对接微信支付防踩屎/',
+    favicon: {
+      show: "（●´3｀●）Goooood",
+      hide: "(´Д｀)Booooom"
+    },
+    search : {
+      placeholder: "Search for Posts",
+      empty: "We didn't find any results for the search: ${query}",
+      stats: "${hits} results found in ${time} ms"
+    },
+    valine: true,fancybox: true,
+    copyright: 'Copied to clipboard successfully! <br> All articles in this blog are licensed under <i class="ic i-creative-commons"></i>BY-NC-SA.',
+    ignores : [
+      function(uri) {
+        return uri.includes('#');
+      },
+      function(uri) {
+        return new RegExp(LOCAL.path+"$").test(uri);
+      }
+    ]
+  };
+</script>
+
+<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
+
+<script src="//cdn.jsdelivr.net/combine/npm/pace-js@1.0.2/pace.min.js,npm/pjax@0.2.8/pjax.min.js,npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js,npm/animejs@3.2.0/lib/anime.min.js,npm/algoliasearch@4/dist/algoliasearch-lite.umd.js,npm/instantsearch.js@4/dist/instantsearch.production.min.js,npm/lozad@1/dist/lozad.min.js,npm/quicklink@2/dist/quicklink.umd.js"></script>
+
+<script src="/js/app.js?v=0.2.5"></script>
+
+
+
+
+</body>
+</html>
