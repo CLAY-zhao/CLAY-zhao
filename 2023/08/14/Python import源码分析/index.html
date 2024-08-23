@@ -102,12 +102,12 @@ Waim Chiu = 神的直觉</title>
       </div>
       <div id="imgs" class="pjax">
         <ul>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?437211"></li>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?228512"></li>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?555774"></li>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?125326"></li>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?693709"></li>
-          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?944267"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?704879"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?172916"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?782567"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?802784"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?694205"></li>
+          <li class="item" data-background-image="https://tuapi.eees.cc/api.php?category=dongman&type=302&?379724"></li>
         </ul>
       </div>
     </header>
@@ -197,9 +197,6 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
 <figure class="highlight shell"><figcaption data-lang="Bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token operator">>></span><span class="token operator">></span> from hashlib <span class="token function">import</span> md5</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token operator">>></span><span class="token operator">></span> <span class="token function">import</span> hashlib</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token operator">>></span><span class="token operator">></span> md5</pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token operator">&lt;</span>built-in <span class="token keyword">function</span> openssl_md<span class="token operator"><span class="token file-descriptor important">5</span>></span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token operator">>></span><span class="token operator">></span> hashlib</pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token operator">&lt;</span>module <span class="token string">'hashlib'</span> from <span class="token string">'D:\\python3.9.12\\lib\\hashlib.py'</span><span class="token operator">></span></pre></td></tr></table></figure><p>既然当我们通过 import 导入模块对象并操作时，我们是如果获取对应属性的呢？比如 hashlib.md5，我们先来看看 moduleobject 的结构</p>
 <figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre>PyTypeObject PyModule_Type <span class="token operator">=</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token function">PyVarObject_HEAD_INIT</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>PyType_Type<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token string">"module"</span><span class="token punctuation">,</span>                                   <span class="token comment">/* tp_name */</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    <span class="token keyword">sizeof</span><span class="token punctuation">(</span>PyModuleObject<span class="token punctuation">)</span><span class="token punctuation">,</span>                     <span class="token comment">/* tp_basicsize */</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_itemsize */</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    <span class="token punctuation">(</span>destructor<span class="token punctuation">)</span>module_dealloc<span class="token punctuation">,</span>                 <span class="token comment">/* tp_dealloc */</span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_vectorcall_offset */</span></pre></td></tr><tr><td data-num="8"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_getattr */</span></pre></td></tr><tr><td data-num="9"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_setattr */</span></pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_as_async */</span></pre></td></tr><tr><td data-num="11"></td><td><pre>    <span class="token punctuation">(</span>reprfunc<span class="token punctuation">)</span>module_repr<span class="token punctuation">,</span>                      <span class="token comment">/* tp_repr */</span></pre></td></tr><tr><td data-num="12"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_as_number */</span></pre></td></tr><tr><td data-num="13"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_as_sequence */</span></pre></td></tr><tr><td data-num="14"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_as_mapping */</span></pre></td></tr><tr><td data-num="15"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_hash */</span></pre></td></tr><tr><td data-num="16"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_call */</span></pre></td></tr><tr><td data-num="17"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_str */</span></pre></td></tr><tr><td data-num="18"></td><td><pre>    <span class="token punctuation">(</span>getattrofunc<span class="token punctuation">)</span>module_getattro<span class="token punctuation">,</span>              <span class="token comment">/* tp_getattro */</span></pre></td></tr><tr><td data-num="19"></td><td><pre>    PyObject_GenericSetAttr<span class="token punctuation">,</span>                    <span class="token comment">/* tp_setattro */</span></pre></td></tr><tr><td data-num="20"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_as_buffer */</span></pre></td></tr><tr><td data-num="21"></td><td><pre>    Py_TPFLAGS_DEFAULT <span class="token operator">|</span> Py_TPFLAGS_HAVE_GC <span class="token operator">|</span></pre></td></tr><tr><td data-num="22"></td><td><pre>        Py_TPFLAGS_BASETYPE<span class="token punctuation">,</span>                    <span class="token comment">/* tp_flags */</span></pre></td></tr><tr><td data-num="23"></td><td><pre>    module___init____doc__<span class="token punctuation">,</span>                     <span class="token comment">/* tp_doc */</span></pre></td></tr><tr><td data-num="24"></td><td><pre>    <span class="token punctuation">(</span>traverseproc<span class="token punctuation">)</span>module_traverse<span class="token punctuation">,</span>              <span class="token comment">/* tp_traverse */</span></pre></td></tr><tr><td data-num="25"></td><td><pre>    <span class="token punctuation">(</span>inquiry<span class="token punctuation">)</span>module_clear<span class="token punctuation">,</span>                      <span class="token comment">/* tp_clear */</span></pre></td></tr><tr><td data-num="26"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_richcompare */</span></pre></td></tr><tr><td data-num="27"></td><td><pre>    <span class="token function">offsetof</span><span class="token punctuation">(</span>PyModuleObject<span class="token punctuation">,</span> md_weaklist<span class="token punctuation">)</span><span class="token punctuation">,</span>      <span class="token comment">/* tp_weaklistoffset */</span></pre></td></tr><tr><td data-num="28"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_iter */</span></pre></td></tr><tr><td data-num="29"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_iternext */</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    module_methods<span class="token punctuation">,</span>                             <span class="token comment">/* tp_methods */</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    module_members<span class="token punctuation">,</span>                             <span class="token comment">/* tp_members */</span></pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_getset */</span></pre></td></tr><tr><td data-num="33"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_base */</span></pre></td></tr><tr><td data-num="34"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_dict */</span></pre></td></tr><tr><td data-num="35"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_descr_get */</span></pre></td></tr><tr><td data-num="36"></td><td><pre>    <span class="token number">0</span><span class="token punctuation">,</span>                                          <span class="token comment">/* tp_descr_set */</span></pre></td></tr><tr><td data-num="37"></td><td><pre>    <span class="token function">offsetof</span><span class="token punctuation">(</span>PyModuleObject<span class="token punctuation">,</span> md_dict<span class="token punctuation">)</span><span class="token punctuation">,</span>          <span class="token comment">/* tp_dictoffset */</span></pre></td></tr><tr><td data-num="38"></td><td><pre>    module___init__<span class="token punctuation">,</span>                            <span class="token comment">/* tp_init */</span></pre></td></tr><tr><td data-num="39"></td><td><pre>    PyType_GenericAlloc<span class="token punctuation">,</span>                        <span class="token comment">/* tp_alloc */</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    PyType_GenericNew<span class="token punctuation">,</span>                          <span class="token comment">/* tp_new */</span></pre></td></tr><tr><td data-num="41"></td><td><pre>    PyObject_GC_Del<span class="token punctuation">,</span>                            <span class="token comment">/* tp_free */</span></pre></td></tr><tr><td data-num="42"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>我们可以看到，moduleobject 实现了自己的 tp_getattro 方法，我们来看看是如何获取属性的</p>
 <figure class="highlight c"><figcaption data-lang="c"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">static</span> PyObject<span class="token operator">*</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token function">module_getattro</span><span class="token punctuation">(</span>PyModuleObject <span class="token operator">*</span>m<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>name<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    PyObject <span class="token operator">*</span>attr<span class="token punctuation">,</span> <span class="token operator">*</span>mod_name<span class="token punctuation">,</span> <span class="token operator">*</span>getattr<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token comment">/**</pre></td></tr><tr><td data-num="6"></td><td><pre>        首先调用 PyObject_GenericGetAttr 从 moduleobject 中获取指定属性，PyObject_GenericGetAttr 具体是怎么实现的可以</pre></td></tr><tr><td data-num="7"></td><td><pre>        我往期的 getattr 实现原理剖析，有详细讲解到描述器的作用</pre></td></tr><tr><td data-num="8"></td><td><pre>    **/</span></pre></td></tr><tr><td data-num="9"></td><td><pre>    attr <span class="token operator">=</span> <span class="token function">PyObject_GenericGetAttr</span><span class="token punctuation">(</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span>m<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>attr <span class="token operator">||</span> <span class="token operator">!</span><span class="token function">PyErr_ExceptionMatches</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="11"></td><td><pre>        <span class="token comment">// 当找到属性并且没有匹配到异常 (AttributeError)，则直接返回</span></pre></td></tr><tr><td data-num="12"></td><td><pre>        <span class="token keyword">return</span> attr<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>    <span class="token function">PyErr_Clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>    <span class="token comment">// 如果没有找到属性，则走到这</span></pre></td></tr><tr><td data-num="16"></td><td><pre>    <span class="token keyword">if</span> <span class="token punctuation">(</span>m<span class="token operator">-></span>md_dict<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>        <span class="token comment">// 获取 moduleobject 的__dict__，并从其中获取__getattr__方法</span></pre></td></tr><tr><td data-num="18"></td><td><pre>        <span class="token function">_Py_IDENTIFIER</span><span class="token punctuation">(</span>__getattr__<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="19"></td><td><pre>        getattr <span class="token operator">=</span> <span class="token function">_PyDict_GetItemId</span><span class="token punctuation">(</span>m<span class="token operator">-></span>md_dict<span class="token punctuation">,</span> <span class="token operator">&amp;</span>PyId___getattr__<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>getattr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>            <span class="token comment">// 如果定义了__getattr__方法，则调用__getattr__方法并返回结果</span></pre></td></tr><tr><td data-num="22"></td><td><pre>            <span class="token keyword">return</span> <span class="token function">PyObject_CallOneArg</span><span class="token punctuation">(</span>getattr<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="23"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>        <span class="token comment">// 如果没有找到__getattr__方法，则从__dict__中获取__name__属性</span></pre></td></tr><tr><td data-num="25"></td><td><pre>        mod_name <span class="token operator">=</span> <span class="token function">_PyDict_GetItemId</span><span class="token punctuation">(</span>m<span class="token operator">-></span>md_dict<span class="token punctuation">,</span> <span class="token operator">&amp;</span>PyId___name__<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="26"></td><td><pre>        <span class="token keyword">if</span> <span class="token punctuation">(</span>mod_name <span class="token operator">&amp;&amp;</span> <span class="token function">PyUnicode_Check</span><span class="token punctuation">(</span>mod_name<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="27"></td><td><pre>            <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>mod_name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="28"></td><td><pre>            <span class="token comment">//__spec__这个属性我并不了解，因为几乎接触不到，哭～～～</span></pre></td></tr><tr><td data-num="29"></td><td><pre>            <span class="token comment">//__spec__用于存储有关模块的信息，以及在导入过程中指定如何加载和初始化模块的信息。该属性在 3.3 引入的，作为对导入机制的增强。</span></pre></td></tr><tr><td data-num="30"></td><td><pre>            <span class="token comment">// 具体细节自行了解</span></pre></td></tr><tr><td data-num="31"></td><td><pre>            PyObject <span class="token operator">*</span>spec <span class="token operator">=</span> <span class="token function">_PyDict_GetItemId</span><span class="token punctuation">(</span>m<span class="token operator">-></span>md_dict<span class="token punctuation">,</span> <span class="token operator">&amp;</span>PyId___spec__<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="32"></td><td><pre>            <span class="token function">Py_XINCREF</span><span class="token punctuation">(</span>spec<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="33"></td><td><pre>            <span class="token comment">// 下面都是抛异常处理，不是重点</span></pre></td></tr><tr><td data-num="34"></td><td><pre>            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_PyModuleSpec_IsInitializing</span><span class="token punctuation">(</span>spec<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="35"></td><td><pre>                <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="36"></td><td><pre>                             <span class="token string">"partially initialized "</span></pre></td></tr><tr><td data-num="37"></td><td><pre>                             <span class="token string">"module '%U' has no attribute '%U' "</span></pre></td></tr><tr><td data-num="38"></td><td><pre>                             <span class="token string">"(most likely due to a circular import)"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="39"></td><td><pre>                             mod_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="40"></td><td><pre>            <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="41"></td><td><pre>            <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="42"></td><td><pre>                <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="43"></td><td><pre>                             <span class="token string">"module '%U' has no attribute '%U'"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="44"></td><td><pre>                             mod_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="45"></td><td><pre>            <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="46"></td><td><pre>            <span class="token function">Py_XDECREF</span><span class="token punctuation">(</span>spec<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="47"></td><td><pre>            <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>mod_name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="48"></td><td><pre>            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="49"></td><td><pre>        <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="50"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="51"></td><td><pre>    <span class="token function">PyErr_Format</span><span class="token punctuation">(</span>PyExc_AttributeError<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="52"></td><td><pre>                <span class="token string">"module has no attribute '%U'"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="53"></td><td><pre>    <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="54"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>剩下的字节码（STORE_NAME、LOAD_CONST、RETURN_VALUE）都是一样的步骤，存储变量，return None，到这里分析的就差不多了，如果还有其它细节或者错误，可以留下您的评论作以修正！</p>
-<blockquote>
-<p>女朋友昨晚 12 点多才回到家里，我睡觉了没回女朋友信息，她生气了，我已经知道是我的错了，所以下次再出现这种情况，我尽量早点睡觉😎</p>
-</blockquote>
 <div align=center width=100%><iframe class="video-frame" height=500 width=80% frameborder=0 allowfullscreen src="//player.bilibili.com/player.html?aid=784872355&bvid=BV1B14y1m774&cid=1164105147&page=1" ></iframe></div>
 
       <div class="tags">
@@ -216,7 +213,7 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
       <i class="ic i-calendar-check"></i>
     </span>
     <span class="text">Edited on</span>
-    <time title="Modified: 2024-04-11 20:27:22" itemprop="dateModified" datetime="2024-04-11T20:27:22+08:00">2024-04-11</time>
+    <time title="Modified: 2024-08-23 13:44:50" itemprop="dateModified" datetime="2024-08-23T13:44:50+08:00">2024-08-23</time>
   </span>
   <span id="2023/08/14/Python import源码分析/" class="item leancloud_visitors" data-flag-title="Python import源码分析" title="Views">
       <span class="icon">
@@ -274,7 +271,7 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
     <div class="item left">
       
 
-  <a href="/2023/07/14/%E5%88%9D%E6%AD%A5%E4%BD%93%E9%AA%8CCodeFormer/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tuapi.eees.cc&#x2F;api.php?category&#x3D;dongman&amp;type&#x3D;302&amp;?366786" title="初步体验CodeFormer">
+  <a href="/2023/07/14/%E5%88%9D%E6%AD%A5%E4%BD%93%E9%AA%8CCodeFormer/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tuapi.eees.cc&#x2F;api.php?category&#x3D;dongman&amp;type&#x3D;302&amp;?977656" title="初步体验CodeFormer">
   <span class="type">Previous Post</span>
   <span class="category"><i class="ic i-flag"></i> AI</span>
   <h3>初步体验CodeFormer</h3>
@@ -284,7 +281,7 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
     <div class="item right">
       
 
-  <a href="/2023/08/15/%E8%BA%AB%E4%BB%BD%E8%AF%81%E6%A0%A1%E9%AA%8C%E7%AE%97%E6%B3%95-ISO-7064-1983-MOD-11-2/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;tuapi.eees.cc&#x2F;api.php?category&#x3D;dongman&amp;type&#x3D;302&amp;?218692" title="身份证校验算法 (ISO 7064:1983.MOD 11-2)">
+  <a href="/2023/08/15/%E8%BA%AB%E4%BB%BD%E8%AF%81%E6%A0%A1%E9%AA%8C%E7%AE%97%E6%B3%95-ISO-7064-1983-MOD-11-2/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;tuapi.eees.cc&#x2F;api.php?category&#x3D;dongman&amp;type&#x3D;302&amp;?981724" title="身份证校验算法 (ISO 7064:1983.MOD 11-2)">
   <span class="type">Next Post</span>
   <span class="category"><i class="ic i-flag"></i> ISO</span>
   <h3>身份证校验算法 (ISO 7064:1983.MOD 11-2)</h3>
@@ -422,12 +419,34 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/CPython/" title="In CPython">CPython</a>
-<i class="ic i-angle-right"></i>
-<a href="/categories/CPython/C/" title="In C">C</a>
+<a href="/categories/CPython-C/" title="In CPython C">CPython C</a>
 </div>
 
-    <span><a href="/2023/11/16/CPython%E4%B8%AD%E5%8F%98%E9%87%8F%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84/" title="CPython中变量是如何实现的">CPython中变量是如何实现的</a></span>
+    <span><a href="/2022/11/16/Inside-The-Python-Virtual-Machine-Python-Objects/" title="Inside The Python Virtual Machine - Python Objects">Inside The Python Virtual Machine - Python Objects</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Python/" title="In Python">Python</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/Python/AI/" title="In AI">AI</a>
+</div>
+
+    <span><a href="/2023/07/14/%E5%88%9D%E6%AD%A5%E4%BD%93%E9%AA%8CCodeFormer/" title="初步体验CodeFormer">初步体验CodeFormer</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Office/" title="In Office">Office</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/Office/PowerPoint/" title="In PowerPoint">PowerPoint</a>
+</div>
+
+    <span><a href="/2022/10/25/PPT%E7%BB%93%E6%9E%84%E7%BB%84%E6%88%90%EF%BC%88%E5%B7%A5%E4%BD%9C%E4%B8%AD%E7%9A%84%E6%80%BB%E7%BB%93%EF%BC%89/" title="PPT结构组成（工作中的总结）">PPT结构组成（工作中的总结）</a></span>
   </li>
 
       
@@ -437,9 +456,11 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
 <a href="/categories/CPython/" title="In CPython">CPython</a>
 <i class="ic i-angle-right"></i>
 <a href="/categories/CPython/C/" title="In C">C</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/CPython/C/Python/" title="In Python">Python</a>
 </div>
 
-    <span><a href="/2022/11/02/Python%E7%9A%84%E5%B1%9E%E6%80%A7%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84/" title="Python的属性是如何工作的">Python的属性是如何工作的</a></span>
+    <span><a href="/2022/06/22/Python%20range%E7%9A%84%E5%AF%A6%E7%8F%BE%E5%8E%9F%E7%90%86/" title="Python range的實現原理">Python range的實現原理</a></span>
   </li>
 
       
@@ -449,7 +470,19 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
 <a href="/categories/game/" title="In game">game</a>
 </div>
 
-    <span><a href="/2022/12/11/%E5%87%B1%E5%A8%9C%EF%BC%9A%E7%B2%BE%E7%A5%9E%E4%B9%8B%E6%A9%8B%EF%BC%88BOSS%E9%97%9C%E5%8D%A1%E8%A8%98%E9%8C%84%EF%BC%89/" title="凱娜：精神之橋（BOSS關卡記錄）">凱娜：精神之橋（BOSS關卡記錄）</a></span>
+    <span><a href="/2022/11/14/Cookie-Run-Kingdom%E6%B4%BB%E5%8A%A8-B-A-D-4/" title="Cookie Run Kingdom活动 - B.A.D.4">Cookie Run Kingdom活动 - B.A.D.4</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Python/" title="In Python">Python</a>
+<i class="ic i-angle-right"></i>
+<a href="/categories/Python/Django/" title="In Django">Django</a>
+</div>
+
+    <span><a href="/2022/10/19/Python%20Django%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E6%97%B6%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" title="Python Django服务启动时做了什么?">Python Django服务启动时做了什么?</a></span>
   </li>
 
       
@@ -468,64 +501,30 @@ LOAD_CONST 1 ((‘md5’,))：加载一个常量，将索引为 1 的常量加�
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/CPython/" title="In CPython">CPython</a>
-<i class="ic i-angle-right"></i>
-<a href="/categories/CPython/C/" title="In C">C</a>
-</div>
-
-    <span><a href="/2022/08/03/Python%20list%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" title="Python list实现原理">Python list实现原理</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/CPython/" title="In CPython">CPython</a>
-<i class="ic i-angle-right"></i>
-<a href="/categories/CPython/C/" title="In C">C</a>
-</div>
-
-    <span><a href="/2022/07/06/Python%20zip%E5%86%85%E7%BD%AE%E7%B1%BB%E7%9A%84%E8%83%8C%E5%90%8E%E6%9C%BA%E5%88%B6/" title="Python zip内置类的背后机制">Python zip内置类的背后机制</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/game/" title="In game">game</a>
-</div>
-
-    <span><a href="/2022/11/04/%E6%81%90%E9%AC%BC%E7%97%87%E5%8D%95%E9%80%9A-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%9A%BE%E5%BA%A6-%E6%97%A0%E8%BA%B2%E8%97%8F%E7%82%B9/" title="恐鬼症单通 自定义难度 无躲藏点!">恐鬼症单通 自定义难度 无躲藏点!</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/CPython-C/" title="In CPython C">CPython C</a>
-</div>
-
-    <span><a href="/2022/11/16/Inside-The-Python-Virtual-Machine-Python-Objects/" title="Inside The Python Virtual Machine - Python Objects">Inside The Python Virtual Machine - Python Objects</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/ISO/" title="In ISO">ISO</a>
-</div>
-
-    <span><a href="/2023/08/15/%E8%BA%AB%E4%BB%BD%E8%AF%81%E6%A0%A1%E9%AA%8C%E7%AE%97%E6%B3%95-ISO-7064-1983-MOD-11-2/" title="身份证校验算法 (ISO 7064:1983.MOD 11-2)">身份证校验算法 (ISO 7064:1983.MOD 11-2)</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
 <a href="/categories/Linux-Docker/" title="In Linux Docker">Linux Docker</a>
 </div>
 
-    <span><a href="/2023/01/12/Docker%E5%BA%94%E7%94%A8%E7%AF%87/" title="Docker应用篇">Docker应用篇</a></span>
+    <span><a href="/2023/01/04/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C%E7%AF%87/" title="Docker基本操作篇">Docker基本操作篇</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Linux-Kubernetes/" title="In Linux Kubernetes">Linux Kubernetes</a>
+</div>
+
+    <span><a href="/2023/02/01/Linux%E6%90%AD%E5%BB%BAk8s%E7%8E%AF%E5%A2%83/" title="Linux搭建k8s环境">Linux搭建k8s环境</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Linux-Kubernetes/" title="In Linux Kubernetes">Linux Kubernetes</a>
+</div>
+
+    <span><a href="/2023/02/03/k8s-Statefulset%E6%9C%89%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8/" title="k8s Statefulset有状态应用">k8s Statefulset有状态应用</a></span>
   </li>
 
   </ul>
